@@ -39,19 +39,19 @@ class Contenedor  {
             archivos.push(obj) //agrego el objeto al array.
             const archivoString = JSON.stringify(archivos)
             await fs.promises.writeFile(`${this.nombreArchivo}`, archivoString );//escribo el archivo con la nueva informacion.
-            console.log("done");  //
+            console.log("done");
+            return obj.id  //
            }
     }
 }
     async getById(id) {
         try {
-            const leerById = await fs.promises.readFile(`${this.nombreArchivo}/`,'utf-8');//abro el archivo
-            const leerbyIdObjt = JSON.parse(leerById)//lo transformo en objeto
+            const leerbyIdObjt = await this.getAll();
             const encontrado = leerbyIdObjt.find(item => item.id === id)//busco en base al id
             if(encontrado === undefined){
                 console.log("Id no Valido");
             }else{
-                console.log(encontrado);
+                return encontrado;
             }
         } catch (error) {
             console.log("Id no valido!");
@@ -62,7 +62,6 @@ class Contenedor  {
         try{
             const leer = await fs.promises.readFile(`${this.nombreArchivo}`, "utf-8") || "{}";
             const leerObj = JSON.parse(leer);
-            console.log(leerObj);
             return leerObj;
         }catch (error){
         const leer = undefined
@@ -72,8 +71,7 @@ class Contenedor  {
     //void Borra un objeto del archivo con el id.
     async deleteById(id) {
         try {
-            const leer = await fs.promises.readFile(`${this.nombreArchivo}`, "utf-8");
-            const leerObj = JSON.parse(leer);
+            const leerObj = await this.getAll();
             const encontrado = leerObj.filter(item => item.id !== id)
             if(!encontrado){
                 console.log("no existe ese archivo");
@@ -83,7 +81,7 @@ class Contenedor  {
                 console.log("archivo eliminado correctamente, Documento nuevo: ",encontrado);
             }
         } catch (error) {
-            console.log("archivo3:",error);
+            console.log("No se ha logrado eliminar el archivo:",error);
         }
     };
     //void Borra todo los objetos presentes
@@ -96,20 +94,4 @@ class Contenedor  {
        }
     }; 
 };
-const producto = new  Contenedor('producto'  
-)
-// producto.save({ modelo: 'Jordans', precio: 400, link:'www.jordans.com'
-//   });
-producto.save({ modelo:"Convers",precio:200,link:"www.nikeclprod.vteximg.com"
- });
- producto.save({modelo:"Air",precio:300,link:"www.nikeclprod.vteximg.com"
- });
- producto.save({ modelo:"Zyco",precio:999,link:"www.nikeclprod.vteximg.com"
- });
- producto.save({modelo:"NewBalance",precio:350,link:"www.nikeclprod.vteximg.com"
- });
-
-//producto.getAll(); //funciona
-//producto.getById(3); //funciona
-//producto.deleteById(2); //funciona
-//producto.deleteAll(); //funciona
+module.exports = Contenedor;
